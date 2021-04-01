@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ftps
+spec:
+  selector:
+    matchLabels:
+      app: ftps
+  replicas: 1
+  template:
+    metadata:
+      name: ftps-pod
+      labels:
+        app: ftps
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: ftps-cnt
+        image: ftps
+        imagePullPolicy: Never
+        env:
+        - name: IP
+          valueFrom:
+            configMapKeyRef:
+              name: service-ip
+              key: IP
+        ports:
+        - name: main
+          containerPort: 21
+        - name: custom1
+          containerPort: 30021
+        - name: custom2
+          containerPort: 30020
+        command: [ "ash" ]
+        args: [ "ftps_run.sh" ]

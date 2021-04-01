@@ -1,0 +1,205 @@
+apiVersion: influxdata.com/v2alpha1
+kind: Bucket
+metadata:
+    name: ecstatic-joliot-f77001
+spec:
+    name: services
+---
+apiVersion: influxdata.com/v2alpha1
+kind: Dashboard
+metadata:
+    name: ridiculous-turing-777001
+spec:
+    charts:
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "10"
+            name: y
+            scale: linear
+        colors:
+          - hex: '#31C0F6'
+            id: da5c9efd-d3eb-41c8-b21f-50c5e4709ea1
+            name: Nineteen Eighty Four
+            type: scale
+          - hex: '#A500A5'
+            id: 87c0bb2a-c6bd-46ad-9ae8-1648b637afef
+            name: Nineteen Eighty Four
+            type: scale
+          - hex: '#FF7E27'
+            id: b676a7fd-78b6-4e4d-844f-1863ae9d20b4
+            name: Nineteen Eighty Four
+            type: scale
+        geom: line
+        height: 4
+        kind: Xy
+        name: mysql
+        position: overlaid
+        queries:
+          - query: |-
+                from(bucket: "services")
+                  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+                  |> filter(fn: (r) => r["_measurement"] == "docker")
+                  |> filter(fn: (r) => r["_field"] == "n_containers" or r["_field"] == "n_containers_paused" or r["_field"] == "n_containers_running" or r["_field"] == "n_containers_stopped")
+                  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)
+                  |> yield(name: "mean")
+          - query: |-
+                from(bucket: "services")
+                  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+                  |> filter(fn: (r) => r["_measurement"] == "mysql")
+                  |> filter(fn: (r) => r["_field"] == "bytes_received" or r["_field"] == "bytes_sent")
+                  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)
+                  |> yield(name: "mean")
+        width: 4
+        xCol: _time
+        yCol: _value
+    name: Name this Dashboard
+---
+apiVersion: influxdata.com/v2alpha1
+kind: Dashboard
+metadata:
+    name: wondrous-curie-377001
+spec:
+    charts:
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "10"
+            name: y
+            scale: linear
+        colors:
+          - hex: '#31C0F6'
+            id: da5c9efd-d3eb-41c8-b21f-50c5e4709ea1
+            name: Nineteen Eighty Four
+            type: scale
+          - hex: '#A500A5'
+            id: 87c0bb2a-c6bd-46ad-9ae8-1648b637afef
+            name: Nineteen Eighty Four
+            type: scale
+          - hex: '#FF7E27'
+            id: b676a7fd-78b6-4e4d-844f-1863ae9d20b4
+            name: Nineteen Eighty Four
+            type: scale
+        geom: line
+        height: 4
+        kind: Xy
+        name: Name this Cell
+        position: overlaid
+        queries:
+          - query: |-
+                from(bucket: "services")
+                  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+                  |> filter(fn: (r) => r["_measurement"] == "docker")
+                  |> filter(fn: (r) => r["_field"] == "n_containers" or r["_field"] == "n_containers_paused" or r["_field"] == "n_containers_running" or r["_field"] == "n_containers_stopped")
+                  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)
+                  |> yield(name: "mean")
+        width: 4
+        xCol: _time
+        yCol: _value
+    name: docker
+---
+apiVersion: influxdata.com/v2alpha1
+kind: Telegraf
+metadata:
+    name: goofy-sinoussi-b77001
+spec:
+    config: "# Configuration for telegraf agent\n[agent]\n  ## Default data collection
+        interval for all inputs\n  interval = \"10s\"\n  ## Rounds collection interval
+        to 'interval'\n  ## ie, if interval=\"10s\" then always collect on :00, :10,
+        :20, etc.\n  round_interval = true\n\n  ## Telegraf will send metrics to outputs
+        in batches of at most\n  ## metric_batch_size metrics.\n  ## This controls
+        the size of writes that Telegraf sends to output plugins.\n  metric_batch_size
+        = 1000\n\n  ## For failed writes, telegraf will cache metric_buffer_limit
+        metrics for each\n  ## output, and will flush this buffer on a successful
+        write. Oldest metrics\n  ## are dropped first when this buffer fills.\n  ##
+        This buffer only fills when writes fail to output plugin(s).\n  metric_buffer_limit
+        = 10000\n\n  ## Collection jitter is used to jitter the collection by a random
+        amount.\n  ## Each plugin will sleep for a random time within jitter before
+        collecting.\n  ## This can be used to avoid many plugins querying things like
+        sysfs at the\n  ## same time, which can have a measurable effect on the system.\n
+        \ collection_jitter = \"0s\"\n\n  ## Default flushing interval for all outputs.
+        Maximum flush_interval will be\n  ## flush_interval + flush_jitter\n  flush_interval
+        = \"10s\"\n  ## Jitter the flush interval by a random amount. This is primarily
+        to avoid\n  ## large write spikes for users running a large number of telegraf
+        instances.\n  ## ie, a jitter of 5s and interval 10s means flushes will happen
+        every 10-15s\n  flush_jitter = \"0s\"\n\n  ## By default or when set to \"0s\",
+        precision will be set to the same\n  ## timestamp order as the collection
+        interval, with the maximum being 1s.\n  ##   ie, when interval = \"10s\",
+        precision will be \"1s\"\n  ##       when interval = \"250ms\", precision
+        will be \"1ms\"\n  ## Precision will NOT be used for service inputs. It is
+        up to each individual\n  ## service input to set the timestamp at the appropriate
+        precision.\n  ## Valid time units are \"ns\", \"us\" (or \"µs\"), \"ms\",
+        \"s\".\n  precision = \"\"\n\n  ## Logging configuration:\n  ## Run telegraf
+        with debug log messages.\n  debug = false\n  ## Run telegraf in quiet mode
+        (error log messages only).\n  quiet = false\n  ## Specify the log file name.
+        The empty string means to log to stderr.\n  logfile = \"\"\n\n  ## Override
+        default hostname, if empty use os.Hostname()\n  hostname = \"\"\n  ## If set
+        to true, do no set the \"host\" tag in the telegraf agent.\n  omit_hostname
+        = false\n[[outputs.influxdb_v2]]\t\n  ## The URLs of the InfluxDB cluster
+        nodes.\n  ##\n  ## Multiple URLs can be specified for a single cluster, only
+        ONE of the\n  ## urls will be written to each interval.\n  ## urls exp: http://127.0.0.1:8086\n
+        \ urls = [\"http://influxdb.m3:8086\"]\n\n  ## Token for authentication.\n
+        \ token = \"$INFLUX_TOKEN\"\n\n  ## Organization is the name of the organization
+        you wish to write to; must exist.\n  organization = \"school21\"\n\n  ## Destination
+        bucket to write into.\n  bucket = \"services\"\n[[inputs.docker]]\t\n  ##
+        Docker Endpoint\n  ##   To use TCP, set endpoint = \"tcp://[ip]:[port]\"\n
+        \ ##   To use environment variables (ie, docker-machine), set endpoint = \"ENV\"\n
+        \ ##   exp: unix:///var/run/docker.sock\n  endpoint = 'unix:///var/run/docker.sock'\n\n
+        \ ## Set to true to collect Swarm metrics(desired_replicas, running_replicas)\n
+        \ gather_services = false\n\n  ## Only collect metrics for these containers,
+        collect all if empty\n  container_names = []\n\n  ## Containers to include
+        and exclude. Globs accepted.\n  ## Note that an empty array for both will
+        include all containers\n  container_name_include = []\n  container_name_exclude
+        = []\n\n  ## Container states to include and exclude. Globs accepted.\n  ##
+        When empty only containers in the \"running\" state will be captured.\n  #
+        container_state_include = []\n  # container_state_exclude = []\n\n  ## Timeout
+        for docker list, info, and stats commands\n  timeout = \"5s\"\n\n  ## Whether
+        to report for each container per-device blkio (8:0, 8:1...) and\n  ## network
+        (eth0, eth1, ...) stats or not\n  perdevice = true\n\n  ## Whether to report
+        for each container total blkio and network stats or not\n  total = false\n
+        \ \n  ## Which environment variables should we use as a tag\n  ##tag_env =
+        [\"JAVA_HOME\", \"HEAP_SIZE\"]\n  ## docker labels to include and exclude
+        as tags.  Globs accepted.\n  ## Note that an empty array for both will include
+        all labels as tags\n  docker_label_include = []\n  docker_label_exclude =
+        []\n[[inputs.mysql]]\n  ## specify servers via a url matching:\n  ##  [username[:password]@][protocol[(address)]]/[?tls=[true|false|skip-verify|custom]]\n
+        \ ##  see https://github.com/go-sql-driver/mysql#dsn-data-source-name\n  ##
+        \ e.g.\n  ##    servers = [\"user:passwd@tcp(127.0.0.1:3306)/?tls=false\"]\n
+        \ ##    servers = [\"user@tcp(127.0.0.1:3306)/?tls=false\"]\n  #\n  ## If
+        no servers are specified, then localhost is used as the host.\n  servers =
+        [\"tcp(mysql.m3:3306)/\"]\n\n  ## Selects the metric output format.\n  ##\n
+        \ ## This option exists to maintain backwards compatibility, if you have\n
+        \ ## existing metrics do not set or change this value until you are ready
+        to\n  ## migrate to the new format.\n  ##\n  ## If you do not have existing
+        metrics from this plugin set to the latest\n  ## version.\n  ##\n  ## Telegraf
+        >=1.6: metric_version = 2\n  ##           <1.6: metric_version = 1 (or unset)\n
+        \ metric_version = 2\n\n  ## if the list is empty, then metrics are gathered
+        from all database tables\n  # table_schema_databases = []\n\n  ## gather metrics
+        from INFORMATION_SCHEMA.TABLES for databases provided above list\n  # gather_table_schema
+        = false\n\n  ## gather thread state counts from INFORMATION_SCHEMA.PROCESSLIST\n
+        \ # gather_process_list = false\n\n  ## gather user statistics from INFORMATION_SCHEMA.USER_STATISTICS\n
+        \ # gather_user_statistics = false\n\n  ## gather auto_increment columns and
+        max values from information schema\n  # gather_info_schema_auto_inc = false\n\n
+        \ ## gather metrics from INFORMATION_SCHEMA.INNODB_METRICS\n  # gather_innodb_metrics
+        = false\n\n  ## gather metrics from SHOW SLAVE STATUS command output\n  #
+        gather_slave_status = false\n\n  ## gather metrics from SHOW BINARY LOGS command
+        output\n  # gather_binary_logs = false\n\n  ## gather metrics from SHOW GLOBAL
+        VARIABLES command output\n  # gather_global_variables = true\n\n  ## gather
+        metrics from PERFORMANCE_SCHEMA.TABLE_IO_WAITS_SUMMARY_BY_TABLE\n  # gather_table_io_waits
+        = false\n\n  ## gather metrics from PERFORMANCE_SCHEMA.TABLE_LOCK_WAITS\n
+        \ # gather_table_lock_waits = false\n\n  ## gather metrics from PERFORMANCE_SCHEMA.TABLE_IO_WAITS_SUMMARY_BY_INDEX_USAGE\n
+        \ # gather_index_io_waits = false\n\n  ## gather metrics from PERFORMANCE_SCHEMA.EVENT_WAITS\n
+        \ # gather_event_waits = false\n\n  ## gather metrics from PERFORMANCE_SCHEMA.FILE_SUMMARY_BY_EVENT_NAME\n
+        \ # gather_file_events_stats = false\n\n  ## gather metrics from PERFORMANCE_SCHEMA.EVENTS_STATEMENTS_SUMMARY_BY_DIGEST\n
+        \ # gather_perf_events_statements = false\n\n  ## the limits for metrics form
+        perf_events_statements\n  # perf_events_statements_digest_text_limit = 120\n
+        \ # perf_events_statements_limit = 250\n  # perf_events_statements_time_limit
+        = 86400\n\n  ## Some queries we may want to run less often (such as SHOW GLOBAL
+        VARIABLES)\n  ##   example: interval_slow = \"30m\"\n  # interval_slow = \"\"\n\n
+        \ ## Optional TLS Config (will be used if tls=custom parameter specified in
+        server uri)\n  # tls_ca = \"/etc/telegraf/ca.pem\"\n  # tls_cert = \"/etc/telegraf/cert.pem\"\n
+        \ # tls_key = \"/etc/telegraf/key.pem\"\n  ## Use TLS but skip chain & host
+        verification\n  # insecure_skip_verify = false"
+    description: for services
+    name: telegraf_docker

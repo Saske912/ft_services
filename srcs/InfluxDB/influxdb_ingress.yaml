@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: influxdb
+spec:
+  rules:
+  - host: influxdb.sevice.im
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: influxdb
+          servicePort: 8086

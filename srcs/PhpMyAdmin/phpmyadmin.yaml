@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+spec:
+  selector:
+    matchLabels:
+      app: pma
+  template:
+    metadata:
+      name: phpmyadmin
+      labels:
+        app: pma
+    spec:
+      containers:
+      - name: phpmyadmin-cnt
+        image: phpmyadmin
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 15
+        command: [ "ash" ]
+        args: [ "run.sh" ]
+        ports:
+        - name: phpmyadmin
+          containerPort: 5000
+        imagePullPolicy: Never
+      restartPolicy: Always

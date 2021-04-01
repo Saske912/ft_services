@@ -1,0 +1,3 @@
+CREATE DATABASE wp_pma;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' identified by 'Saske912';
+FLUSH PRIVILEGES;

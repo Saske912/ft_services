@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      name: wordpress
+      labels:
+        app: wordpress
+    spec:
+      containers:
+      - name: wordpress-cnt
+        image: wordpress
+        env:
+        - name: IP
+          valueFrom:
+              configMapKeyRef:
+                name: service-ip
+                key: IP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5050
+          initialDelaySeconds: 15
+        imagePullPolicy: Never
+        command: [ "ash" ]
+        args: [ "run.sh" ]
+        ports:
+        - name: wp
+          containerPort: 5050
+      restartPolicy: Always

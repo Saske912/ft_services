@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+spec:
+  selector:
+    matchLabels:
+      g_base: influx
+  template:
+    metadata:
+      name: influxdb-pod
+      labels:
+        g_base: influx
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: influxdb-cnt
+        image: influxdb
+        imagePullPolicy: Never
+        command: [ "ash" ]
+        args: [ "run_influxd.sh" ]
+        env:
+        - name: IP
+          valueFrom:
+            configMapKeyRef:
+              name: service-ip
+              key: IP
+        ports:
+        - containerPort: 8086
+        volumeMounts:
+        - name: influx-data
+          mountPath: /root/.influxdbv2
+      restartPolicy: Always
+      volumes:
+      - name: influx-data
+        persistentVolumeClaim:
+          claimName: influxdb-pvc

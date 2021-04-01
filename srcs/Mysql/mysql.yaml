@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      data: mysql
+  template:
+    metadata:
+      name: mysql
+      labels:
+        data: mysql
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mysql-cnt
+        image: mysql
+        imagePullPolicy: Never
+        env:
+        - name: MYSQL_USER
+          value: "root"
+        - name: MYSQL_USER_PASSWORD
+          value: "Saske912"
+        - name: WP
+          valueFrom:
+              configMapKeyRef:
+                name: service-ip
+                key: IP
+        command: [ "ash" ]
+        args: [ "run_mysql.sh" ]
+        ports:
+        - containerPort: 300
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+      restartPolicy: Always
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mysql-pvc

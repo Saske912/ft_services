@@ -1,5 +1,11 @@
 kubernetes cluster based on minikube.
 
+system package requirements:
+- docker
+- virtualbox
+- minikube
+- kubectl
+
 metallb load-balancing.
 
 microservices:
